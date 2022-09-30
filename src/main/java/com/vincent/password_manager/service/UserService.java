@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.vincent.password_manager.bean.Group;
+import com.vincent.password_manager.bean.OptionalData;
 import com.vincent.password_manager.bean.User;
 import com.vincent.password_manager.bean.UserAuthority;
 import com.vincent.password_manager.dao.UserAuthorityDao;
@@ -209,5 +210,25 @@ public class UserService
         {
 			return null;
 		}
+    }
+
+    public Response changePassword(User user, OptionalData optional) 
+    {
+        String oldPassword = optional.getOldPassword();
+        String encodeOldPassword = this.sha256PasswordEncoder.encode(oldPassword);
+        String newPassword = optional.getNewPassword();
+        String reNewPassword = optional.getReNewPassword();
+
+        if(!encodeOldPassword.equals(user.getPassword()))
+            return new Response(false, 400, "Old password does not correct");
+
+        if(!newPassword.equals(reNewPassword))
+            return new Response(false, 400, "new password and re-new password does not match");
+
+        user.setPassword(this.sha256PasswordEncoder.encode(newPassword));
+
+        this.userDao.save(user);
+
+        return new Response(true);
     }
 }

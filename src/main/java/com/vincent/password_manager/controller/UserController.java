@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vincent.password_manager.bean.OptionalData;
 import com.vincent.password_manager.bean.User;
 import com.vincent.password_manager.http.HttpResponseThrowers;
 import com.vincent.password_manager.http.Response;
@@ -110,5 +111,13 @@ public class UserController
             return new Response(false, "no origin user found");
 
         return new Response(userService.modifyUser(origin, user));
+    }
+
+    @PreAuthorize(ConstantType.HAS_ANY_ALL_AUTHORITY)
+    @PutMapping("/changePassword")
+    public Response changePassword(@RequestBody OptionalData optional, Authentication authentication)
+    {
+        User user = this.userService.getCurrentLoginUser(authentication);
+        return this.userService.changePassword(user, optional);
     }
 }

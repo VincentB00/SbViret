@@ -6,8 +6,6 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import javafx.util.Pair;
-
 public class ViewPackers
 {
     public static final String BEARER_TOKEN = "Authorization";
@@ -24,7 +22,7 @@ public class ViewPackers
 
     public static String customToJson(Object object, ArrayList<String> classes)
     {
-        List<Pair<Object, Object>> list = new ArrayList<>();
+        List<String[]> list = new ArrayList<>();
 
         Method[] methods = object.getClass().getMethods();
 
@@ -35,8 +33,6 @@ public class ViewPackers
 
             if(!(get.contains("get") || get.contains("is")))
                 continue;
-
-                
 
             if(classes != null)
             {
@@ -64,7 +60,9 @@ public class ViewPackers
 
             try
             {
-                list.add(new Pair<Object,Object>(variableName.toString(), method.invoke(object)));
+                String key = variableName.toString();
+                String value = (String) method.invoke(object);
+                list.add(new String[] {key, value});
             }
             catch(Exception ex)
             {
@@ -93,18 +91,14 @@ public class ViewPackers
             return String.format("{\"%s\":\"%s\"}", key, value);
     }
 
-    public static String toJson(List<Pair<Object, Object>> list)
+    public static String toJson(List<String[]> list)
     {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{");
         for(int count = 0; count < list.size(); count++)
         {	
-            String key = list.get(count).getKey().toString();
-
-            String value = null;
-
-            if(list.get(count).getValue() != null)
-                value = list.get(count).getValue().toString();
+            String key = list.get(count)[0];
+            String value = list.get(count)[1];
 
             if(count >= (list.size() - 1))
             {
@@ -124,6 +118,38 @@ public class ViewPackers
         stringBuilder.append("}");
         return stringBuilder.toString();
     }
+
+    // public static String toJson(List<Pair<Object, Object>> list)
+    // {
+    //     StringBuilder stringBuilder = new StringBuilder();
+    //     stringBuilder.append("{");
+    //     for(int count = 0; count < list.size(); count++)
+    //     {	
+    //         String key = list.get(count).getKey().toString();
+
+    //         String value = null;
+
+    //         if(list.get(count).getValue() != null)
+    //             value = list.get(count).getValue().toString();
+
+    //         if(count >= (list.size() - 1))
+    //         {
+    //             if(isNumber(value) || value == null)
+    //                 stringBuilder.append(String.format("\"%s\":%s", key, value));
+    //             else
+    //                 stringBuilder.append(String.format("\"%s\":\"%s\"", key, value));
+    //         }
+    //         else
+    //         {
+    //             if(isNumber(value) || value == null)
+    //                 stringBuilder.append(String.format("\"%s\":%s,", key, value));
+    //             else
+    //                 stringBuilder.append(String.format("\"%s\":\"%s\",", key, value));
+    //         }
+    //     }
+    //     stringBuilder.append("}");
+    //     return stringBuilder.toString();
+    // }
 
     public static boolean isNumber(Object object)
     {

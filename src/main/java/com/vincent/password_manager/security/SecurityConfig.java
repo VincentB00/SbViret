@@ -39,6 +39,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 	@Autowired
 	private LogoutSuccessHandlerImpl logoutSuccessHandlerImpl;
 
+    private final String origins[] = new String[] {
+        ConstantType.ACCESS_CONTROL_ALLOW_ORIGIN, 
+        "http://192.168.1.6:1116", 
+        "http://192.168.1.6:1117",
+        "67.241.14.7",
+        "67.241.14.7:1116",
+        "67.241.14.7:1117",
+        "http://vincentprivate.synology.me",
+        "http://vincentprivate.synology.me:1116",
+        "http://vincentprivate.synology.me:1117"
+    };
+
     @Override
     protected void configure(HttpSecurity http) throws Exception 
     {
@@ -84,7 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     CorsConfigurationSource corsConfigurationSource() 
     {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(ConstantType.ACCESS_CONTROL_ALLOW_ORIGIN));
+        configuration.setAllowedOrigins(Arrays.asList(origins));
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Origin", "X-Requested-With", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
